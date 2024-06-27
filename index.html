@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dynamic Yellow Website</title>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #FFFFCC; /* light yellow background */
+        overflow: hidden;
+    }
+    #container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    .glowing-sphere {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background-color: yellow;
+        border-radius: 50%;
+        box-shadow: 0 0 50px yellow, 0 0 100px yellow, 0 0 150px yellow;
+        transition: all 1s ease-out;
+        pointer-events: none;
+    }
+    .red-x {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background-color: red;
+        transform: rotate(45deg);
+        font-size: 20px;
+        line-height: 20px;
+        text-align: center;
+        color: white;
+        cursor: pointer;
+        pointer-events: auto;
+    }
+    .points-box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 200px;
+        height: 100px;
+        background-color: #CCCCCC; /* grey background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2em;
+        color: red;
+        font-weight: bold;
+        text-align: center;
+        pointer-events: none;
+    }
+    .winner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 4em;
+        font-weight: bold;
+        color: red;
+        text-align: center;
+        pointer-events: none;
+    }
+    .tiny-sphere {
+        position: absolute;
+        width: 5px;
+        height: 5px;
+        background-color: yellow;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+<div id="container"></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('container');
+    let glowingSphere;
+    let redX;
+    let points = 0;
+    
+    function createGlowingSphere() {
+        glowingSphere = document.createElement('div');
+        glowingSphere.classList.add('glowing-sphere');
+        glowingSphere.style.left = `${Math.random() * 90}vw`;
+        glowingSphere.style.top = `${Math.random() * 90}vh`;
+        container.appendChild(glowingSphere);
+    }
+
+    function createRedX() {
+        redX = document.createElement('div');
+        redX.classList.add('red-x');
+        redX.style.left = `${Math.random() * 90}vw`;
+        redX.style.top = `${Math.random() * 90}vh`;
+        container.appendChild(redX);
+        redX.addEventListener('click', handleRedXClick);
+    }
+
+    function handleRedXClick() {
+        moveGlowingSphere();
+        updatePoints();
+        createRedX();
+    }
+
+    function moveGlowingSphere() {
+        const x = redX.getBoundingClientRect().left + redX.offsetWidth / 2;
+        const y = redX.getBoundingClientRect().top + redX.offsetHeight / 2;
+        glowingSphere.style.transition = 'none';
+        glowingSphere.style.left = `${x}px`;
+        glowingSphere.style.top = `${y}px`;
+        setTimeout(() => {
+            glowingSphere.style.transition = 'all 1s ease-out';
+            glowingSphere.style.left = `${x}px`;
+            glowingSphere.style.top = `${y}px`;
+        }, 100);
+    }
+
+    function updatePoints() {
+        const increment = [10, 25, 50, 100][Math.floor(Math.random() * 4)];
+        points += increment;
+        const pointsBox = document.createElement('div');
+        pointsBox.classList.add('points-box');
+        pointsBox.textContent = `Points: ${points}`;
+        container.appendChild(pointsBox);
+        if (points >= 500) {
+            showWinner();
+        }
+    }
+
+    function showWinner() {
+        container.innerHTML = ''; // Clear previous content
+        const winner = document.createElement('div');
+        winner.classList.add('winner');
+        winner.textContent = 'Winner!';
+        container.appendChild(winner);
+        createTinySpheres();
+        setTimeout(() => {
+            container.innerHTML = ''; // Clear winner after click
+            points = 0; // Reset points
+            createGlowingSphere();
+            createRedX();
+        }, 6000);
+    }
+
+    function createTinySpheres() {
+        for (let i = 0; i < 100; i++) {
+            const tinySphere = document.createElement('div');
+            tinySphere.classList.add('tiny-sphere');
+            tinySphere.style.left = `${Math.random() * 100}vw`;
+            tinySphere.style.top = `${Math.random() * 100}vh`;
+            container.appendChild(tinySphere);
+        }
+    }
+
+    createGlowingSphere();
+    createRedX();
+});
+</script>
+</body>
+</html>
